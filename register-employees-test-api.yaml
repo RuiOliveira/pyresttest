@@ -53,3 +53,14 @@
     - expected_status: [400]
     - validators:
       - compare: {raw_body: "", comparator: contains, expected: 'nif is required.' }
+
+- test: # error create contact
+    - name: "error create contact "
+    - group: "POST Requests"
+    - method: "POST"
+    - url: "/employees"
+    - headers: {Content-Type: application/json}
+    - body: '{"nif": 298765111}'
+    - expected_status: [400]
+    - validators:
+      - compare: {raw_body: "", comparator: contains, expected: 'name is required.' }      
