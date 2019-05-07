@@ -1,0 +1,55 @@
+---
+- config:
+    - testset: "Basic tests from Register Employees API"
+
+- test: # Test api up
+    - name: "Basic get request"
+    - group: "GET Requests"
+    - method: "GET"
+    - url: "/"
+    - expected_status: [200]
+    - validators:
+      - compare: {raw_body: "", comparator: contains, expected: 'Welcome to Employee API!' }
+
+- test: # Test 404
+    - name: "Basic request 404"
+    - group: "GET Requests"
+    - method: "GET"
+    - url: "/test321"
+    - expected_status: [404]
+
+- test: # create full contact
+    - name: "Create full contact"
+    - group: "POST Requests"
+    - method: "POST"
+    - url: "/employees"
+    - headers: {Content-Type: application/json}
+    - body: '{"name": "testpyrest", "nif": 999777111, "address": "Porto"}'
+    - expected_status: [201]
+    - validators:
+      - compare: {jsonpath_mini: "name", comparator: "eq", expected: "testpyrest"}
+      - compare: {jsonpath_mini: "nif", comparator: "eq", expected: 999777111}
+      - compare: {jsonpath_mini: "address", comparator: "eq", expected: "Porto"}
+
+- test: # create contact without address
+    - name: "Create contact"
+    - group: "POST Requests"
+    - method: "POST"
+    - url: "/employees"
+    - headers: {Content-Type: application/json}
+    - body: '{"name": "testerPorto", "nif": 999777111}'
+    - expected_status: [201]
+    - validators:
+      - compare: {jsonpath_mini: "name", comparator: "eq", expected: "testerPorto"}
+      - compare: {jsonpath_mini: "nif", comparator: "eq", expected: 999777111}
+
+- test: # error create contact
+    - name: "error create contact "
+    - group: "POST Requests"
+    - method: "POST"
+    - url: "/employees"
+    - headers: {Content-Type: application/json}
+    - body: '{"name": "testerPTM"}'
+    - expected_status: [400]
+    - validators:
+      - compare: {raw_body: "", comparator: contains, expected: 'nif is required.' }
